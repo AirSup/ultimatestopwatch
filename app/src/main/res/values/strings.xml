@@ -20,8 +20,8 @@
     <string name="secs">Secs</string>
     <string name="play_store_uri">http://play.google.com/store/apps/details?id=com.geekyouup.android.ustopwatch</string>
     <string name="countdown_complete">Countdown Complete!</string>
-    <string name="default_time">00:00:00.000</string>
-    <string name="_0">0</string>
+    <string name="default_time" translatable="false">00:00:00.000</string>
+    <string name="_0" translatable="false">0</string>
 
     <string name="times">Times</string>
     <string name="reset_button">Reset Button</string>
@@ -48,5 +48,31 @@
     <string name="settings_endless_alert">Extra Long Alert</string>
     <string name="settings_animations">Hand Animations</string>
     <string name="settings_about_text">The Ultimate Stopwatch, developed by Rich \'GeekYouUp\' Hyndman and designed by marie-schweiz.de</string>
+    <string name="version_prefix">Version v</string>
+    <string name="notification_start_sw">Stopwatch running</string>
+    <string name="notification_channel_name_start">stopwatch start notification</string>
+    <string name="notification_channel_desc_start">stopwatch start notification with time message</string>
+    <string name="notification_channel_name_countdown">stopwatch countdown notification</string>
+    <string name="notification_channel_desc_countdown">stopwatch countdown notification with time message</string>
+    <string name="image_separator" translatable="false">separator</string>
+    <string name="theme_mode_day">day mode</string>
+    <string name="theme_mode_night">night mode</string>
+    <string name="theme_mode_sys">system theme</string>
+    <string name="theme_mode_prompt">Select theme mode</string>
+    <string name="text_sample">Text sample in the view</string>
+    <string name="theme_mode_current">Theme mode</string>
+    <string name="default_time_countdown" translatable="false">-00:00:00.000</string>
+    <string name="settings_keep_screen_on">Keep screen on</string>
+    <string name="audio_toggle" translatable="false">Audio Toggle</string>
+    <string name="orientation_current">Orientation</string>
+    <string name="orientation_prompt">Select orientation</string>
+    <string name="orientation_landscape">landscape</string>
+    <string name="orientation_portrait">portrait</string>
+    <string name="orientation_sys">system orientation</string>
+    <string name="language_current">Language</string>
+    <string name="language_prompt">Select language</string>
+    <string name="language_sys">device language</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="language_ch" translatable="false">中文</string>
 
 </resources>

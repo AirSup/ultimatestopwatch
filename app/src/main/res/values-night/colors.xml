@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#ff090909</color>
+    <color name="stopwatch_background">#ff090909</color>
+    <color name="countdown_background">#ff090909</color>
+    <color name="actionbar_background">#262625</color>
+    <color name="button_bg_normal">#404040</color>
+    <color name="button_action">#555555</color>
+
+    <color name="text_normal">#0288D1</color>
+    <color name="article_background">#181818</color>
+    <color name="text_dark">#0288D1</color>
+    <color name="time_stopwatch_start">#999999</color>
+    <color name="time_stopwatch_end">#0288D1</color>
+</resources>

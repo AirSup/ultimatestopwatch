@@ -9,7 +9,7 @@ import com.geekyouup.android.ustopwatch.UltimateStopwatchActivity;
 
 public class LapTimeRecorder {
 
-    private static ArrayList<Double> mLapTimes = new ArrayList<Double>();
+    private static ArrayList<Double> mLapTimes = new ArrayList<>();
     private static final String PREFS_NAME_LAPTIMES = "usw_prefs_laptimes";
     private static final String KEY_LAPTIME_X = "LAPTIME_";
     private static LapTimeRecorder mSelf;
@@ -20,12 +20,15 @@ public class LapTimeRecorder {
         return mSelf;
     }
 
+    /**
+     * @noinspection RedundantIfStatement
+     */
     public void loadTimes(Context cxt) {
         SharedPreferences settings = cxt.getSharedPreferences(PREFS_NAME_LAPTIMES, Context.MODE_PRIVATE);
         if (settings != null) {
             int lapTimeNum = 0;
             mLapTimes.clear();
-            double lt = 0;
+            double lt;
             boolean prevZero = false;
             while ((lt = settings.getLong(KEY_LAPTIME_X + lapTimeNum, -1L)) != -1L) {
                 lapTimeNum++;
@@ -48,12 +51,12 @@ public class LapTimeRecorder {
             SharedPreferences.Editor editor = settings.edit();
             if (editor != null) {
                 editor.clear();
-                if (mLapTimes != null && mLapTimes.size() > 0) {
+                if (mLapTimes != null && !mLapTimes.isEmpty()) {
                     for (int i = 0; i < mLapTimes.size(); i++) {
                         editor.putLong(KEY_LAPTIME_X + i, mLapTimes.get(i).longValue());
                     }
                 }
-                editor.commit();
+                editor.apply();
             }
         }
     }
@@ -67,14 +70,14 @@ public class LapTimeRecorder {
     }
 
     public void stopwatchReset() {
-        if (mLapTimes.size() > 0 && mLapTimes.get(0) != null && mLapTimes.get(0) == 0)
+        if (!mLapTimes.isEmpty() && mLapTimes.get(0) != null && mLapTimes.get(0) == 0)
             return; //don't record multiple resets
         mLapTimes.add(0, 0d);
     }
 
     public ArrayList<LapTimeBlock> getTimes() {
         int numTimes = mLapTimes.size();
-        ArrayList<LapTimeBlock> lapTimeBlocks = new ArrayList<LapTimeBlock>();
+        ArrayList<LapTimeBlock> lapTimeBlocks = new ArrayList<>();
         LapTimeBlock ltb = new LapTimeBlock();
         for (int i = 0; i < numTimes; i++) {
             double laptime = mLapTimes.get(i);
@@ -97,18 +100,16 @@ public class LapTimeRecorder {
         SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME_LAPTIMES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
 
-        if (activity != null) {
-            LapTimesFragment ltf = activity.getLapTimeFragment();
-            if (ltf != null) ltf.lapTimesUpdated();
-        }
+        LapTimesFragment ltf = activity.getLapTimeFragment();
+        if (ltf != null) ltf.lapTimesUpdated();
     }
 
     public void deleteLapTimes(ArrayList<Integer> positions, LapTimesFragment ltf) {
         int numTimes = mLapTimes.size();
         int timeNumber = 0;
-        ArrayList<Double> newLapTimes = new ArrayList<Double>();
+        ArrayList<Double> newLapTimes = new ArrayList<>();
         for (int i = 0; i < numTimes; i++) {
             double laptime = mLapTimes.get(i);
             if (laptime == 0) {
@@ -116,7 +117,7 @@ public class LapTimeRecorder {
                 timeNumber++;
             }
 
-            if (!positions.contains(Integer.valueOf(timeNumber))) {
+            if (!positions.contains(timeNumber)) {
                 newLapTimes.add(laptime);
             }
         }

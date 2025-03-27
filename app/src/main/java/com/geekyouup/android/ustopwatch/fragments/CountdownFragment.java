@@ -1,24 +1,32 @@
 package com.geekyouup.android.ustopwatch.fragments;
 
+import static com.geekyouup.android.ustopwatch.constant.UstopwatchConsts.LOG_TAG;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
-import android.os.Vibrator;
+
+import com.geekyouup.android.ustopwatch.adapter.AlarmUpdater;
+import com.geekyouup.android.ustopwatch.adapter.SoundManager;
+import com.geekyouup.android.ustopwatch.constant.UstopwatchConsts;
+import com.geekyouup.android.ustopwatch.util.AppUtils;
+import com.geekyouup.android.ustopwatch.util.ContextUtils;
+import com.geekyouup.android.ustopwatch.util.TimeUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import android.text.style.TextAppearanceSpan;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
 import com.geekyouup.android.ustopwatch.*;
 
-import android.graphics.Rect;
-
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 public class CountdownFragment extends Fragment {
@@ -43,9 +51,6 @@ public class CountdownFragment extends Fragment {
     private static final String KEY_LAST_MIN = "key_last_min";
     private static final String KEY_LAST_SEC = "key_last_sec";
 
-    public static final String MSG_REQUEST_TIME_PICKER = "msg_request_time_picker";
-    public static final String MSG_COUNTDOWN_COMPLETE = "msg_countdown_complete";
-    public static final String MSG_APP_RESUMING = "msg_app_resuming";
     private int mLastSecondTicked = 0;
 
     //countdown picker dialog variables
@@ -54,29 +59,62 @@ public class CountdownFragment extends Fragment {
     private static int mMinsValue = 0;
     private static int mSecsValue = 0;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    private TextAppearanceSpan mTimeSpanStart;
 
+    private TextAppearanceSpan mTimeSpanEnd;
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mSoundManager = SoundManager.getInstance(getContext());
 
-        View cdView = inflater.inflate(R.layout.countdown_fragment, null);
-        mCountdownView = (StopwatchCustomVectorView) cdView.findViewById(R.id.cdview);
-        mTimerText = (TextView) cdView.findViewById(R.id.time_counter);
-        mTimerText.setOnTouchListener(new View.OnTouchListener() {
+        View cdView = View.inflate(getContext(), R.layout.countdown_fragment, null);
+        mCountdownView = cdView.findViewById(R.id.cdview);
+        mCountdownView.setHandler(new Handler(Looper.getMainLooper()) {
             @Override
-            public boolean onTouch(View v, MotionEvent m) {
-                if (!isRunning()) requestTimeDialog();
-                return true;
+            public void handleMessage(@NonNull Message m) {
+                if (m.getData().getBoolean(UstopwatchConsts.MSG_REQUEST_TIME_PICKER, false)) {
+                    requestTimeDialog();
+                } else if (m.getData().getBoolean(UstopwatchConsts.MSG_COUNTDOWN_COMPLETE, false)) {
+                    boolean appResuming = m.getData().getBoolean(UstopwatchConsts.MSG_APP_RESUMING, false);
+                    if (!appResuming) {
+                        mSoundManager.playSound(SoundManager.SOUND_COUNTDOWN_ALARM, SettingsActivity.isEndlessAlarm());
+                        ContextUtils.vibrateIfCould(getContext(), 1000);
+                    }
+
+                    reset();
+                } else if (m.getData().getBoolean(UstopwatchConsts.MSG_UPDATE_COUNTER_TIME, false)) {
+                    mCurrentTimeMillis = m.getData().getDouble(UstopwatchConsts.MSG_NEW_TIME_DOUBLE);
+
+                    //If we've crossed into a new second then make the tick sound
+                    int currentSecond = (int) mCurrentTimeMillis / 1000;
+                    if (currentSecond > mLastSecondTicked) {
+                        mSoundManager.doTick();
+                    }
+                    mLastSecondTicked = currentSecond;
+                    // 更新数字栏时间显示
+                    setTextTimerTime(mCurrentTimeMillis);
+                    Log.d(LOG_TAG, "update text timer complete");
+                } else if (m.getData().getBoolean(UstopwatchConsts.MSG_STATE_CHANGE, false)) {
+                    if (isRunning()) isReset = false;
+                    setUIState();
+                }
             }
         });
+        mTimerText = cdView.findViewById(R.id.time_counter);
+        mTimerText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isRunning()) requestTimeDialog();
+            }
+        });
+        AppUtils.decorateTextTimer(mTimerText, getResources());
 
         //resetFAB has 2 states, if stopped it is a time picker, else it is reset
-        mResetFAB = (FloatingActionButton) cdView.findViewById(R.id.resetfab);
+        mResetFAB = cdView.findViewById(R.id.resetfab);
         if (!isRunning() && isReset)
             mResetFAB.setImageResource(R.drawable.ic_set_countdown_time_24dp);
         else
             mResetFAB.setImageResource(R.drawable.ic_countdown_reset_24dp);
-
         mResetFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,67 +126,41 @@ public class CountdownFragment extends Fragment {
             }
         });
 
+        // text timer color span
+        mTimeSpanStart = new TextAppearanceSpan(getContext(), R.style.TimeTextDarkThemeDark);
+        mTimeSpanEnd = new TextAppearanceSpan(getContext(), R.style.TimeTextDarkThemeLight);
+
+        Log.i(LOG_TAG, "countdown fragment onCreateView() complete");
         return cdView;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        SharedPreferences settings = getContext().getSharedPreferences(COUNTDOWN_PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean(PREF_IS_RUNNING, mRunningState);
-        mCountdownView.saveState(editor);
-        editor.putInt(KEY_LAST_HOUR, mLastHour);
-        editor.putInt(KEY_LAST_MIN, mLastMin);
-        editor.putInt(KEY_LAST_SEC, mLastSec);
-        editor.commit();
-
-        mCountdownView.stop();
+    public void onStart() {
+        super.onStart();
+        // 创建视图的时候就从存储中恢复数据，避免视图可见的时候更新落后，使视图立即完整的
+        this.restoreFromPreferences();
+        Log.i(LOG_TAG, "countdown fragment onStart() complete");
     }
 
+    /**
+     * 可交互
+     * （对用户可见）
+     */
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(LOG_TAG, "countdown fragment onResume() start");
         // cancel next alarm if there is one, and clear notification bar
         AlarmUpdater.cancelCountdownAlarm(getContext());
+        //
+        this.restoreFromPreferences();
+        Log.i(LOG_TAG, "countdown fragment onResume() complete");
+    }
 
-        mCountdownView.setHandler(new Handler() {
-            @Override
-            public void handleMessage(Message m) {
-                if (m.getData().getBoolean(MSG_REQUEST_TIME_PICKER, false)) {
-                    requestTimeDialog();
-                } else if (m.getData().getBoolean(MSG_COUNTDOWN_COMPLETE, false)) {
-                    boolean appResuming = m.getData().getBoolean(MSG_APP_RESUMING, false);
-                    if (!appResuming) {
-                        mSoundManager.playSound(SoundManager.SOUND_COUNTDOWN_ALARM, SettingsActivity.isEndlessAlarm());
-
-                        if (SettingsActivity.isVibrate() && getActivity() != null) {
-                            Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000);
-                        }
-                    }
-
-                    reset(!appResuming && SettingsActivity.isEndlessAlarm());
-                } else if (m.getData().getBoolean(UltimateStopwatchActivity.MSG_UPDATE_COUNTER_TIME, false)) {
-                    mCurrentTimeMillis = m.getData().getDouble(
-                            UltimateStopwatchActivity.MSG_NEW_TIME_DOUBLE);
-
-                    //If we've crossed into a new second then make the tick sound
-                    int currentSecond = (int) mCurrentTimeMillis / 1000;
-                    if (currentSecond > mLastSecondTicked) {
-                        mSoundManager.doTick();
-                    }
-                    mLastSecondTicked = currentSecond;
-
-
-                    setTime(mCurrentTimeMillis);
-                } else if (m.getData().getBoolean(UltimateStopwatchActivity.MSG_STATE_CHANGE, false)) {
-                    if (isRunning()) isReset = false;
-                    setUIState();
-                }
-            }
-        });
-
+    /**
+     * @noinspection DataFlowIssue
+     */
+    private void restoreFromPreferences() {
         SharedPreferences settings = getContext().getSharedPreferences(COUNTDOWN_PREFS, Context.MODE_PRIVATE);
         mLastHour = settings.getInt(KEY_LAST_HOUR, 0);
         mLastMin = settings.getInt(KEY_LAST_MIN, 0);
@@ -156,45 +168,22 @@ public class CountdownFragment extends Fragment {
         mRunningState = settings.getBoolean(PREF_IS_RUNNING, false);
         mCountdownView.restoreState(settings);
         mCurrentTimeMillis = mCountdownView.getWatchTime();
-
-        ((UltimateStopwatchActivity) getActivity()).registerCountdownFragment(this);
-
-        Paint paint = new Paint();
-        Rect bounds = new Rect();
-        paint.setTypeface(Typeface.SANS_SERIF);// your preference here
-        paint.setTextSize(getResources().getDimension(R.dimen.counter_font));// have this the same as your text size
-        String text = "-00:00:00.000";
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        int text_width = bounds.width();
-        int width = getResources().getDisplayMetrics().widthPixels;
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            width = width / 2;
-
-        mTimerText.setPadding((width - text_width) / 2, 0, 0, 0);
+        Log.d(LOG_TAG, "countdown fragment restoreFromPreferences() complete");
     }
 
-    public void reset(boolean endlessAlarmSounding) {
+    public void reset() {
         mCountdownView.setTime(mLastHour, mLastMin, mLastSec, true);
         isReset = true;
         setUIState();
     }
 
-    public void reset() {
-        reset(false);
-    }
-
-    public void setTime(int hour, int minute, int seconds) {
-        mLastHour = hour;
-        mLastMin = minute;
-        mLastSec = seconds;
-        mCountdownView.setTime(hour, minute, seconds, false);
-        setUIState();
-    }
-
-    private void setTime(double millis) {
-        if (mTimerText != null) {
-            mTimerText.setText(TimeUtils.createStyledSpannableString(getContext(), millis, false));
-        }
+    /**
+     * 设置数字栏时间显示
+     *
+     * @param millis
+     */
+    private void setTextTimerTime(double millis) {
+        mTimerText.setText(TimeUtils.toStyledString(millis, mTimeSpanStart, mTimeSpanEnd));
     }
 
     public boolean isRunning() {
@@ -214,6 +203,31 @@ public class CountdownFragment extends Fragment {
         }
     }
 
+    /**
+     * @noinspection DataFlowIssue
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferences settings = getContext().getSharedPreferences(COUNTDOWN_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(PREF_IS_RUNNING, mRunningState);
+        mCountdownView.saveState(editor);
+        editor.putInt(KEY_LAST_HOUR, mLastHour);
+        editor.putInt(KEY_LAST_MIN, mLastMin);
+        editor.putInt(KEY_LAST_SEC, mLastSec);
+        editor.apply();
+        Log.i(LOG_TAG, "countdown fragment onPause() complete");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //
+        mCountdownView.stop();
+        Log.i(LOG_TAG, "countdown fragment onStop() complete");
+    }
+
     private void requestTimeDialog() {
         // stop stacking of dialogs
         if (mDialogOnScreen)
@@ -223,24 +237,21 @@ public class CountdownFragment extends Fragment {
         if (mMinsValue == 0) mMinsValue = mLastMin;
         if (mSecsValue == 0) mSecsValue = mLastSec;
 
-        ContextThemeWrapper wrapper = new ContextThemeWrapper(getContext(), androidx.appcompat.R.style.Theme_AppCompat);
-        final LayoutInflater inflater = (LayoutInflater) wrapper.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View ll = inflater.inflate(R.layout.countdown_picker, null);
-
-        final NumberPicker npHours = (NumberPicker) ll.findViewById(R.id.numberPickerHours);
+        ContextThemeWrapper contextWrapper = new ContextThemeWrapper(getContext(), R.style.AppTheme_PickerDialog);
+        //ContextThemeWrapper contextWrapper = new ContextThemeWrapper(getContext(), androidx.appcompat.R.style.Theme_AppCompat);
+        View countdownPickerView = LayoutInflater.from(contextWrapper).inflate(R.layout.countdown_picker, null);
+        NumberPicker npHours = countdownPickerView.findViewById(R.id.numberPickerHours);
         npHours.setMaxValue(99);
         npHours.setValue(mHoursValue);
-
-        final NumberPicker npMins = (NumberPicker) ll.findViewById(R.id.numberPickerMins);
+        NumberPicker npMins = countdownPickerView.findViewById(R.id.numberPickerMins);
         npMins.setMaxValue(59);
         npMins.setValue(mMinsValue);
-
-        final NumberPicker npSecs = (NumberPicker) ll.findViewById(R.id.numberPickerSecs);
+        NumberPicker npSecs = countdownPickerView.findViewById(R.id.numberPickerSecs);
         npSecs.setMaxValue(59);
         npSecs.setValue(mSecsValue);
-
-        AlertDialog mSelectTime = new AlertDialog.Builder(wrapper).create();
-        mSelectTime.setView(ll);
+        //
+        AlertDialog mSelectTime = new AlertDialog.Builder(contextWrapper).create();
+        mSelectTime.setView(countdownPickerView);
         mSelectTime.setTitle(getString(R.string.timer_title));
         mSelectTime.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.timer_start),
                 new DialogInterface.OnClickListener() {
@@ -269,41 +280,11 @@ public class CountdownFragment extends Fragment {
         mDialogOnScreen = true;
     }
 
-    /*private void requestPreAPI11TimeDialog() {
-        Context context = getContext();
-        //stop stacking of dialogs
-        if (mDialogOnScreen) return;
-
-        LayoutInflater inflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View ll = TimeUtils.createTimeSelectDialogLayout(context, inflator, mHoursValue, mMinsValue, mSecsValue);
-
-        AlertDialog mSelectTime = new AlertDialog.Builder(context).create();
-        mSelectTime.setView(ll);
-        mSelectTime.setTitle(getString(R.string.timer_title));
-        mSelectTime.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.timer_start), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                mDialogOnScreen = false;
-                mHoursValue = TimeUtils.getDlgHours();
-                mMinsValue = TimeUtils.getDlgMins();
-                mSecsValue = TimeUtils.getDlgSecs();
-                setTime(mHoursValue, mMinsValue, mSecsValue);
-            }
-        });
-        mSelectTime.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.timer_cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                mDialogOnScreen = false;
-            }
-        });
-
-        mSelectTime.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                mDialogOnScreen = false;
-            }
-        });
-        mSelectTime.show();
-
-        mDialogOnScreen = true;
-    }*/
-
+    public void setTime(int hour, int minute, int seconds) {
+        mLastHour = hour;
+        mLastMin = minute;
+        mLastSec = seconds;
+        mCountdownView.setTime(mLastHour, mLastMin, mLastSec, false);
+        setUIState();
+    }
 }

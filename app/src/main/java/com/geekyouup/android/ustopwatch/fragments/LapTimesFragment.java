@@ -2,12 +2,11 @@ package com.geekyouup.android.ustopwatch.fragments;
 
 import java.util.ArrayList;
 
-import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -23,7 +22,7 @@ import com.geekyouup.android.ustopwatch.UltimateStopwatchActivity;
 public class LapTimesFragment extends ListFragment implements LapTimeListener {
 
     private LapTimesBaseAdapter mAdapter;
-    private ArrayList<LapTimeBlock> mLapTimes = new ArrayList<LapTimeBlock>();
+    private ArrayList<LapTimeBlock> mLapTimes = new ArrayList<>();
     private LapTimeRecorder mLapTimeRecorder;
     private ArrayList<Integer> mCheckedItems;
 
@@ -48,94 +47,85 @@ public class LapTimesFragment extends ListFragment implements LapTimeListener {
         setupMultiChoiceSelect(listView);
 
         mAdapter = new LapTimesBaseAdapter(getActivity(), mLapTimes);
-        setListAdapter(mAdapter);
+        super.setListAdapter(mAdapter);
 
+        //noinspection DataFlowIssue
         ((UltimateStopwatchActivity) getActivity()).registerLapTimeFragment(this);
 
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setupMultiChoiceSelect(ListView listView) {
-        //MultiMode Choice is only available in Honeycomb+
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final LapTimesFragment ltf = this;
-            listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+        final LapTimesFragment ltf = this;
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
-                @Override
-                public void onItemCheckedStateChanged(android.view.ActionMode actionMode, int i, long l, boolean checked) {
-                    if (mCheckedItems == null) mCheckedItems = new ArrayList<Integer>();
-                    if (checked) {
-                        mCheckedItems.add(i);
-                    } else {
-                        mCheckedItems.remove(new Integer(i));
-                    }
+            @Override
+            public void onItemCheckedStateChanged(ActionMode actionMode, int position, long id, boolean checked) {
+                if (mCheckedItems == null) mCheckedItems = new ArrayList<>();
+                if (checked) {
+                    mCheckedItems.add(position);
+                } else {
+                    mCheckedItems.remove(Integer.valueOf(position));
                 }
+            }
 
-                @Override
-                public boolean onCreateActionMode(android.view.ActionMode actionMode, android.view.Menu menu) {
-                    android.view.MenuInflater inflater = actionMode.getMenuInflater();
-                    inflater.inflate(R.menu.menu_laptimes_contextual, menu);
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                MenuInflater inflater = actionMode.getMenuInflater();
+                inflater.inflate(R.menu.menu_laptimes_contextual, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                // Respond to clicks on the actions in the CAB
+                if (menuItem.getItemId() == R.id.menu_context_delete) {
+                    mLapTimeRecorder.deleteLapTimes(mCheckedItems, ltf);
+                    actionMode.finish(); // Action picked, so close the CAB
+                    mCheckedItems.clear();
+                    mCheckedItems = null;
                     return true;
                 }
+                return false;
+            }
 
-                @Override
-                public boolean onPrepareActionMode(android.view.ActionMode actionMode, android.view.Menu menu) {
-                    return false;
-                }
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+            }
+        });
 
-                @Override
-                public boolean onActionItemClicked(android.view.ActionMode actionMode, android.view.MenuItem menuItem) {
-                    // Respond to clicks on the actions in the CAB
-                    switch (menuItem.getItemId()) {
-                       /* case R.id.menu_context_delete:
-                            mLapTimeRecorder.deleteLapTimes(mCheckedItems, ltf);
-                            actionMode.finish(); // Action picked, so close the CAB
-                            mCheckedItems.clear();
-                            mCheckedItems = null;
-                            return true;*/
-                        default:
-                            return false;
+        //on long touch start the contextual actionbar
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //noinspection DataFlowIssue
+                getActivity().startActionMode(new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                        return false;
                     }
-                }
 
-                @Override
-                public void onDestroyActionMode(android.view.ActionMode actionMode) {
-                }
-            });
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                        return false;
+                    }
 
-            //on long touch start the contextual actionbar
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long id) {
-                    getActivity().startActionMode(new ActionMode.Callback() {
-                        @Override
-                        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                            return false;
-                        }
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {
+                    }
 
-                        @Override
-                        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                            return false;
-                        }
-
-                        @Override
-                        public void onDestroyActionMode(ActionMode mode) {
-                        }
-
-                        @Override
-                        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                            return false;
-                        }
-                    });
-                    return true;
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+                    @Override
+                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                        return false;
+                    }
+                });
+                return true;
+            }
+        });
     }
 
     @Override
@@ -148,6 +138,14 @@ public class LapTimesFragment extends ListFragment implements LapTimeListener {
         mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    /**
+     * @noinspection unused
+     */
     public void reset() {
         mLapTimes.clear();
         mAdapter.notifyDataSetChanged();
@@ -160,7 +158,7 @@ public class LapTimesFragment extends ListFragment implements LapTimeListener {
     @Override
     public void lapTimesUpdated() {
         if (mLapTimeRecorder == null) mLapTimeRecorder = LapTimeRecorder.getInstance();
-        if (mLapTimes == null) mLapTimes = new ArrayList<LapTimeBlock>();
+        if (mLapTimes == null) mLapTimes = new ArrayList<>();
 
         mLapTimes.clear();
         mLapTimes.addAll(mLapTimeRecorder.getTimes());

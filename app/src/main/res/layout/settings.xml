@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/background"
+        android:fitsSystemWindows="true"
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
-
 
         <TextView
             android:layout_width="match_parent"
@@ -19,7 +21,7 @@
             android:paddingLeft="5dp"
             android:paddingTop="20dp"
             android:text="@string/settings_settings"
-            android:textColor="#999999"
+            android:textColor="@color/text_high_grey"
             android:textSize="15dp"
             android:textStyle="bold" />
 
@@ -27,86 +29,200 @@
             android:layout_width="fill_parent"
             android:layout_height="3dp"
             android:layout_marginTop="2dp"
-            android:background="#B2B2B2" />
+            android:background="@color/separator_main" />
 
-        <CheckBox
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_language"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif"
+                android:paddingLeft="5dp"
+                android:text="@string/language_current"
+                android:textColor="@color/text_normal"
+                android:textSize="16dp" />
+
+            <Spinner
+                android:id="@+id/settings_language"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:prompt="@string/language_prompt"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_theme_mode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif"
+                android:paddingLeft="5dp"
+                android:text="@string/theme_mode_current"
+                android:textColor="@color/text_normal"
+                android:textSize="16dp" />
+
+            <Spinner
+                android:id="@+id/settings_theme_mode"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:prompt="@string/theme_mode_prompt"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="@color/separator_secondary" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_orientation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif"
+                android:paddingLeft="5dp"
+                android:text="@string/orientation_current"
+                android:textColor="@color/text_normal"
+                android:textSize="16dp" />
+
+            <Spinner
+                android:id="@+id/settings_orientation"
+                style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:prompt="@string/orientation_prompt"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="@color/separator_secondary" />
+
+        <Switch
             android:id="@+id/settings_seconds_laptimer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:fontFamily="sans-serif"
-            android:paddingLeft="48dp"
+            android:paddingLeft="5dp"
             android:text="@string/settings_laptimer"
-            android:textColor="#222222"
+            android:textColor="@color/text_normal"
             android:textSize="16dp" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="#EBEBEB" />
+            android:background="@color/separator_secondary" />
 
-        <!--CheckBox
+        <Switch
             android:id="@+id/settings_seconds_sound"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:fontFamily="sans-serif"
-            android:paddingLeft="48dp"
+            android:paddingLeft="5dp"
             android:text="@string/settings_sound_secs"
-            android:textColor="#222222"
-            android:textSize="16dp" /-->
+            android:textColor="@color/text_normal"
+            android:textSize="16dp" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="#EBEBEB" />
+            android:background="@color/separator_secondary" />
 
-        <CheckBox
+        <Switch
             android:id="@+id/settings_animations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:fontFamily="sans-serif"
-            android:paddingLeft="48dp"
+            android:paddingLeft="5dp"
             android:text="@string/settings_animations"
-            android:textColor="#222222"
+            android:textColor="@color/text_normal"
             android:textSize="16dp" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="#EBEBEB" />
+            android:background="@color/separator_secondary" />
 
-        <CheckBox
+        <Switch
             android:id="@+id/settings_vibrate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:fontFamily="sans-serif"
-            android:paddingLeft="48dp"
+            android:paddingLeft="5dp"
             android:text="@string/settings_vibrate"
-            android:textColor="#222222"
+            android:textColor="@color/text_normal"
             android:textSize="16dp" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="#EBEBEB" />
+            android:background="@color/separator_secondary" />
 
-        <CheckBox
+        <Switch
             android:id="@+id/settings_endless_alert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
             android:fontFamily="sans-serif"
-            android:paddingLeft="48dp"
+            android:paddingLeft="5dp"
             android:text="@string/settings_endless_alert"
-            android:textColor="#222222"
+            android:textColor="@color/text_normal"
+            android:textSize="16dp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="@color/separator_secondary" />
+
+        <Switch
+            android:id="@+id/settings_keep_screen_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif"
+            android:paddingLeft="5dp"
+            android:text="@string/settings_keep_screen_on"
+            android:textColor="@color/text_normal"
             android:textSize="16dp" />
 
         <TextView
@@ -116,7 +232,7 @@
             android:fontFamily="sans-serif"
             android:paddingLeft="5dp"
             android:text="@string/settings_about"
-            android:textColor="#999999"
+            android:textColor="@color/text_high_grey"
             android:textSize="15dp"
             android:textStyle="bold" />
 
@@ -124,7 +240,18 @@
             android:layout_width="fill_parent"
             android:layout_height="3dp"
             android:layout_marginTop="2dp"
-            android:background="#B2B2B2" />
+            android:background="@color/separator_main" />
+
+        <TextView
+            android:id="@+id/settings_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif"
+            android:paddingLeft="5dp"
+            android:text="@string/version_prefix"
+            android:textColor="@color/text_normal"
+            android:textSize="14dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -133,9 +260,8 @@
             android:fontFamily="sans-serif"
             android:paddingLeft="5dp"
             android:text="@string/settings_about_text"
-            android:textColor="#222222"
+            android:textColor="@color/text_normal"
             android:textSize="14dp" />
-
 
     </LinearLayout>
 </ScrollView>

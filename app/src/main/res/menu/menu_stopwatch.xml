@@ -2,12 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_audiotoggle"
+        android:icon="@drawable/ic_volume_black_24dp"
+        android:title="@string/audio_toggle"
+        app:showAsAction="always" />
+    <!-- 这个setting菜单显示在overflow组里，故其android:icon属性不需要 -->
+    <item
         android:id="@+id/menu_settings"
         android:title="@string/settings"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_audiotoggle"
-        android:icon="@drawable/ic_volume_black_24dp"
-        android:title="Audio Toggle"
-        app:showAsAction="always" />
 </menu>

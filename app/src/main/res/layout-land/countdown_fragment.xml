@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_margin="16dp"
+            android:layout_margin="30dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
             app:backgroundTint="@color/blue_button_bg"
             app:srcCompat="@drawable/ic_set_countdown_time_24dp" />

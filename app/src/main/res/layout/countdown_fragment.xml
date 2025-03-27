@@ -4,16 +4,15 @@
     android:id="@+id/countdown_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/countdown_background"
-    android:orientation="vertical">
+    android:background="@color/countdown_background">
 
     <TextView
         android:id="@+id/time_counter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="sans-serif-light"
-        android:text="@string/default_time"
+        android:text="@string/default_time_countdown"
         android:textColor="@color/white"
         android:textSize="@dimen/counter_font" />
 
@@ -29,9 +28,9 @@
         android:id="@+id/resetfab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="30dp"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark"
         app:backgroundTint="@color/blue_button_bg"

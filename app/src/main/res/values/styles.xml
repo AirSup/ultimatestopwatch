@@ -1,37 +1,81 @@
-<!--
-  Copyright (C) 2011 The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Ustopwatch" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Ustopwatch" parent="Base.Theme.Ustopwatch" />
 
     <!-- Time Counter Spannable Styles -->
-    <style name="TimeTextLight">
-        <item name="android:textColor">#999999</item>
-    </style>
-
-    <style name="TimeTextDark">
-        <item name="android:textColor">#000000</item>
-    </style>
-
     <style name="TimeTextDarkThemeLight">
-        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="TimeTextDarkThemeDark">
-        <item name="android:textColor">#6f6f6f</item>
+        <item name="android:textColor">@color/time_countdown_start</item>
     </style>
 
+    <style name="TimeTextStart">
+        <item name="android:textColor">@color/time_stopwatch_start</item>
+    </style>
+
+    <style name="TimeTextEnd">
+        <item name="android:textColor">@color/time_stopwatch_end</item>
+    </style>
+
+    <!-- 这里定义spinner的未弹出时单独显示的那个view样式 -->
+    <style name="SpinnerNormalStyle">
+        <item name="android:background">@color/background</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:textColor">@color/text_normal</item>
+    </style>
+
+    <!-- 倒计时时间选择器的字体颜色; 用于设置NumberPicker属性android:theme="@style/AppTheme.Picker"，改变其文本颜色-->
+    <!-- 可以放到NumberPicker作用于NumberPicker，或者顶层LinearLayout作用于整个LinearLayout，但无法作用到AlertDialog的标题、按钮，
+    不如直接设置ContextThemeWrapper的theme作用于整个AlertDialog -->
+    <style name="AppTheme.Picker" parent="Theme.AppCompat.Light">
+        <!-- 可以用到color.xml color-night.xml中的颜色 -->
+        <item name="android:textColorPrimary">@color/text_dark</item>
+        <!-- NumberPicker分割线的颜色 -->
+        <item name="colorControlNormal">@color/text_dark</item>
+    </style>
+
+    <!-- countdown fragment时间选择dialog主题配置，参数意义不明，不好配置 -->
+    <style name="AppTheme.PickerDialog1" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/black</item>
+        <!-- 可以用到color.xml color-night.xml中的颜色 -->
+        <item name="android:textColorPrimary">@color/black</item>
+        <!-- NumberPicker分割线的颜色 -->
+        <item name="colorControlNormal">@color/black</item>
+    </style>
+
+    <!-- 无参数 -->
+    <style name="AppTheme.PickerDialog2" parent="Theme.AppCompat" />
+
+    <!-- 无用 -->
+    <style name="AppTheme.PickerDialog3" parent="Theme.AppCompat.Light" />
+
+    <!-- 无用 -->
+    <style name="AppTheme.PickerDialog4" parent="Theme.AppCompat.DayNight" />
+
+    <!-- 参数意义不明 -->
+    <style name="AppTheme.PickerDialog" parent="Theme.AppCompat">
+        <!-- dialog标题、NumberPicker文本，设置后会改变dialog背景颜色; 有效但有负作用 -->
+        <!--        <item name="android:textColorPrimary">@color/black</item>-->
+        <!-- NumberPicker分割线的颜色; 有效 -->
+        <!--        <item name="colorControlNormal">@color/black</item>-->
+    </style>
+
+    <style name="anim_fade" parent="@android:style/Animation.Activity">
+<!--        <item name="android:activityOpenEnterAnimation">@anim/anim_fade_in</item>-->
+<!--        <item name="android:activityCloseEnterAnimation">@anim/anim_fade_in</item>-->
+    </style>
 </resources>

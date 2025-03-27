@@ -1,16 +1,22 @@
-package com.geekyouup.android.ustopwatch;
+package com.geekyouup.android.ustopwatch.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
+
+import com.geekyouup.android.ustopwatch.R;
+import com.geekyouup.android.ustopwatch.SettingsActivity;
 
 import java.util.HashMap;
 
 public class SoundManager {
 
-    private Context mContext;
+    private final Context mContext;
+    @SuppressLint("StaticFieldLeak")
     private static SoundManager mSoundManagerInstance;
-    private SoundPool soundPool;
+    private final SoundPool soundPool;
 
     public static final int SOUND_COUNTDOWN_ALARM = 1;
     public static final int SOUND_LAPTIME = 2;
@@ -20,14 +26,21 @@ public class SoundManager {
     public static final int SOUND_TICK = 6;
 
     private static boolean mAudioOn = true;
-    private HashMap<Integer, Integer> soundPoolMap;
+    private final HashMap<Integer, Integer> soundPoolMap;
 
     private SoundManager(Context cxt) {
         this.mContext = cxt;
-
-        soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 100);
-        soundPoolMap = new HashMap<Integer, Integer>();
-
+        SoundPool.Builder builder = new SoundPool.Builder();
+        //传入最多播放音频数量,
+        builder.setMaxStreams(5);
+        //AudioAttributes是一个封装音频各种属性的方法
+        AudioAttributes.Builder attrBuilder = new AudioAttributes.Builder();
+        //设置音频流的合适的属性
+        attrBuilder.setLegacyStreamType(AudioManager.STREAM_MUSIC);
+        //加载一个AudioAttributes
+        builder.setAudioAttributes(attrBuilder.build());
+        soundPool = builder.build();
+        soundPoolMap = new HashMap<>();
         soundPoolMap.put(SOUND_COUNTDOWN_ALARM, soundPool.load(mContext, R.raw.countdown_alarm, 1));
         soundPoolMap.put(SOUND_LAPTIME, soundPool.load(mContext, R.raw.lap_time, 1));
         soundPoolMap.put(SOUND_RESET, soundPool.load(mContext, R.raw.reset_watch, 1));
@@ -47,17 +60,18 @@ public class SoundManager {
 
     int mLoopingSoundId = -1;
 
+    /**
+     * @noinspection DataFlowIssue
+     */
     public void playSound(int soundId, boolean endlessLoop) {
         if (mAudioOn) {
             if (endlessLoop) stopEndlessAlarm();
             AudioManager mgr = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            float streamVolume = mgr
-                    .getStreamVolume(AudioManager.STREAM_MUSIC);
+            float streamVolume = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
             int playingSoundId = soundPool.play(soundPoolMap.get(soundId), streamVolume,
                     streamVolume, 1, endlessLoop ? 35 : 0, 1f);
 
             if (endlessLoop) mLoopingSoundId = playingSoundId;
-
         }
     }
 
@@ -69,13 +83,16 @@ public class SoundManager {
         }
     }
 
+    /**
+     * 计时、倒计时 每秒的滴答声
+     *
+     * @noinspection DataFlowIssue
+     */
     public void doTick() {
         if (mAudioOn && SettingsActivity.isTicking()) {
             AudioManager mgr = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            float streamVolume = mgr
-                    .getStreamVolume(AudioManager.STREAM_MUSIC);
-            soundPool.play(soundPoolMap.get(SOUND_TICK), streamVolume,
-                    streamVolume, 1, 0, 1f);
+            float streamVolume = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+            soundPool.play(soundPoolMap.get(SOUND_TICK), streamVolume, streamVolume, 1, 0, 1f);
         }
     }
 

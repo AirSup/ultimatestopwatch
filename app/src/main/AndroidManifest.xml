@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+
     <supports-screens
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="true"
         android:xlargeScreens="true" />
+
     <application
+        android:name=".UstopwatchApp"
+        android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:localeConfig="@xml/locale_config"
+        android:theme="@style/Theme.Ustopwatch">
+        <!-- 沉浸式状态栏：fitsSystemWindows与主题 -->
+        <!-- localeConfig work when api >= 33 -->
 
         <activity
             android:name=".UltimateStopwatchActivity"
+            android:exported="true"
+            android:screenOrientation="behind"
             android:windowSoftInputMode="adjustNothing"
-            android:exported="true">
+            tools:ignore="DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,9 +43,22 @@
         <activity
             android:name=".SettingsActivity"
             android:icon="@drawable/icon"
-            android:label="@string/app_name_caps" />
+            android:label="@string/app_name_caps"
+            android:screenOrientation="behind"
+            tools:ignore="DiscouragedApi" />
+        <!-- "behind"设置 保持上一个activity的方向，避免加载时2次切换方向 -->
 
-        <service android:name=".AlarmUpdater$UpdateService" />
+        <service android:name=".adapter.AlarmUpdater$UpdateService" />
+
+        <!--    国际化多语言    -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
 
     </application>
-</manifest> 
+</manifest>

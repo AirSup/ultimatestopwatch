@@ -2,26 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/actionbar_background"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
+    <!-- 三个tab+顶部右边2按钮 -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/background"
-        android:elevation="4dp">
+        android:background="@color/actionbar_background"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true">
 
+        <!-- 三个tab -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tablayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/background" />
+            android:background="@color/actionbar_background"
+            android:fitsSystemWindows="true" />
 
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true" />
 </LinearLayout>

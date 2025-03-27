@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="arr_theme_mode">
+        <item>@string/theme_mode_day</item>
+        <item>@string/theme_mode_night</item>
+        <item>@string/theme_mode_sys</item>
+    </string-array>
+    <string-array name="arr_orientation">
+        <item>@string/orientation_portrait</item>
+        <item>@string/orientation_landscape</item>
+        <item>@string/orientation_sys</item>
+    </string-array>
+    <string-array name="arr_language">
+        <item>@string/language_sys</item>
+        <item>@string/language_en</item>
+        <item>@string/language_ch</item>
+    </string-array>
+</resources>
