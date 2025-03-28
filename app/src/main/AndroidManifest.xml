@@ -24,7 +24,8 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:localeConfig="@xml/locale_config"
-        android:theme="@style/Theme.Ustopwatch">
+        android:theme="@style/Theme.Ustopwatch"
+        tools:targetApi="33">
         <!-- 沉浸式状态栏：fitsSystemWindows与主题 -->
         <!-- localeConfig work when api >= 33 -->
 
@@ -38,6 +39,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity

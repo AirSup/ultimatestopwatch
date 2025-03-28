@@ -62,4 +62,10 @@
     <string name="language_current">语言</string>
     <string name="language_prompt">选择语言</string>
     <string name="language_sys">跟随系统</string>
+    <string name="shortcut_stopwatch_long">立即启动计时（启动暂停中的计时，而非重新开始计时）</string>
+    <string name="shortcut_stopwatch_short">开始计时</string>
+    <string name="shortcut_countdown_long">立即启动倒计时（启动暂停的倒计时，而非重置倒计时时间并开始倒计时）</string>
+    <string name="shortcut_countdown_short">倒计时</string>
+    <string name="shortcut_stopwatch_restart">重新计时</string>
+    <string name="shortcut_countdown_restart">重置倒计时</string>
 </resources>

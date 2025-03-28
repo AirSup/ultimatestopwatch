@@ -74,5 +74,11 @@
     <string name="language_sys">device language</string>
     <string name="language_en" translatable="false">English</string>
     <string name="language_ch" translatable="false">中文</string>
+    <string name="shortcut_stopwatch_long">Start stopwatch now</string>
+    <string name="shortcut_stopwatch_short">Stopwatch</string>
+    <string name="shortcut_countdown_long">Start countdown now</string>
+    <string name="shortcut_countdown_short">countdown</string>
+    <string name="shortcut_stopwatch_restart">stopwatch reset</string>
+    <string name="shortcut_countdown_restart">countdown reset</string>
 
 </resources>

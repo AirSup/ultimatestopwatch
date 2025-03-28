@@ -37,6 +37,8 @@ public class StopwatchFragment extends Fragment {
     private double mCurrentTimeMillis = 0;
     private SoundManager mSoundManager;
     private boolean mRunningState = false;
+    // 默认数据已经保存，该次需从配置读取数据
+    private boolean isStateSaved = true;
 
     private static final String PREFS_NAME = "USW_SWFRAG_PREFS";
     private static final String PREF_IS_RUNNING = "key_stopwatch_is_running";
@@ -87,7 +89,6 @@ public class StopwatchFragment extends Fragment {
         mResetFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LapTimeRecorder.getInstance().stopwatchReset();
                 reset();
             }
         });
@@ -115,6 +116,7 @@ public class StopwatchFragment extends Fragment {
     }
 
     private void reset() {
+        LapTimeRecorder.getInstance().stopwatchReset();
         mStopwatchView.setTime(0, 0, 0, true);
         mSoundManager.playSound(SoundManager.SOUND_RESET);
     }
@@ -124,6 +126,24 @@ public class StopwatchFragment extends Fragment {
         super.onStart();
         // 在onStart也调用为避免在onResume开启更新线程慢了导致指针跳动
         this.restoreFromPreferences();
+        Bundle activityBundle = getArguments();
+        String action;
+        if (activityBundle != null
+                && UstopwatchConsts.PAGE_STOPWATCH.equalsIgnoreCase(activityBundle.getString(UstopwatchConsts.PAGE_KEY))) {
+            action = activityBundle.getString(UstopwatchConsts.PAGE_KEY_ACTION);
+            // 快捷方式动作
+            if (UstopwatchConsts.PAGE_ACTION_START.equalsIgnoreCase(action)) {
+                if (!mRunningState) {
+                    mStopwatchView.startStop();
+                }
+            } else if (UstopwatchConsts.PAGE_ACTION_RESTART.equalsIgnoreCase(action)) {
+                this.reset();
+                mStopwatchView.startStop();
+            }
+            //
+            activityBundle.clear();
+        }
+        //
         Log.i(LOG_TAG, "stopwatch fragment onStart() complete");
     }
 
@@ -142,9 +162,14 @@ public class StopwatchFragment extends Fragment {
      * @noinspection DataFlowIssue
      */
     private void restoreFromPreferences() {
+        if (!this.isStateSaved) {
+            return;
+        }
+        //
         SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         mRunningState = settings.getBoolean(PREF_IS_RUNNING, false);
         mStopwatchView.restoreState(settings);
+        this.isStateSaved = false;
     }
 
     /**
@@ -183,6 +208,7 @@ public class StopwatchFragment extends Fragment {
         editor.putBoolean(PREF_IS_RUNNING, mRunningState);
         mStopwatchView.saveState(editor);
         editor.apply();
+        this.isStateSaved = true;
         Log.i(LOG_TAG, "stopwatch fragment onPause() complete");
     }
 

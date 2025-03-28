@@ -1,0 +1,75 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:icon="@drawable/ic_stopwatch_play_24dp"
+        android:shortcutId="shortcut_stopwatch"
+        android:shortcutShortLabel="@string/shortcut_stopwatch_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.geekyouup.android.ustopwatch.UltimateStopwatchActivity"
+            android:targetPackage="com.geekyouup.android.ustopwatch">
+            <extra
+                android:name="current_page"
+                android:value="stopwatch" />
+            <extra
+                android:name="page_action"
+                android:value="start" />
+        </intent>
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    <shortcut
+        android:icon="@drawable/ic_reset_stopwatch_24dp"
+        android:shortcutId="shortcut_stopwatch_restart"
+        android:shortcutShortLabel="@string/shortcut_stopwatch_restart">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.geekyouup.android.ustopwatch.UltimateStopwatchActivity"
+            android:targetPackage="com.geekyouup.android.ustopwatch">
+            <extra
+                android:name="current_page"
+                android:value="stopwatch" />
+            <extra
+                android:name="page_action"
+                android:value="restart" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    <shortcut
+        android:icon="@drawable/ic_timer_start_24dp"
+        android:shortcutId="shortcut_countdown"
+        android:shortcutShortLabel="@string/shortcut_countdown_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.geekyouup.android.ustopwatch.UltimateStopwatchActivity"
+            android:targetPackage="com.geekyouup.android.ustopwatch">
+            <extra
+                android:name="current_page"
+                android:value="countdown" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    <shortcut
+        android:icon="@drawable/ic_countdown_reset_24dp"
+        android:shortcutId="shortcut_countdown_restart"
+        android:shortcutShortLabel="@string/shortcut_countdown_restart">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.geekyouup.android.ustopwatch.UltimateStopwatchActivity"
+            android:targetPackage="com.geekyouup.android.ustopwatch">
+            <extra
+                android:name="current_page"
+                android:value="countdown" />
+            <extra
+                android:name="page_action"
+                android:value="restart" />
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+        <capability-binding android:key="actions.intent.CREATE_MESSAGE" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+</shortcuts>

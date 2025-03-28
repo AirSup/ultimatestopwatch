@@ -31,4 +31,16 @@ public final class UstopwatchConsts {
     public static final String MSG_APP_RESUMING = "msg_app_resuming";
 
     public static final StyleSpan BOLD_SPAN = new StyleSpan(Typeface.BOLD);
+
+    public static final String PAGE_STOPWATCH = "stopwatch";
+
+    public static final String PAGE_COUNTDOWN = "countdown";
+
+    public static final String PAGE_KEY = "current_page";
+
+    public static final String PAGE_KEY_ACTION = "page_action";
+
+    public static final String PAGE_ACTION_START = "start";
+
+    public static final String PAGE_ACTION_RESTART = "restart";
 }

@@ -93,18 +93,15 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
         //
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SettingsActivity.loadSettings(settings);
-        setupTabs();
+        Bundle fragmentBundle = new Bundle();
+        this.setupTabs(fragmentBundle);
+        this.setCurrentTabPage(fragmentBundle);
         //
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         // Create a notification channel (required for Android 8.0 and higher)
         createNotificationChannel();
         //
         setRequestedOrientation(SettingsActivity.getOrientation());
-
-        //If launched from Countdown notification then goto countdown clock directly
-        if (getIntent() != null && getIntent().getBooleanExtra(AlarmUpdater.INTENT_EXTRA_LAUNCH_COUNTDOWN, false)) {
-            mViewPager2.setCurrentItem(2);
-        }
 
         // setting button to launch setting activity
         mSettingLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -121,20 +118,23 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
                     }
                 });
 
+        //
         stopwatchActivity = this;
         Log.i(LOG_TAG, "ultimate stopwatch activity onCreate() complete");
     }
 
-    private void setupTabs() {
+    private void setupTabs(Bundle fragmentBundle) {
         TabLayout tl = findViewById(R.id.tablayout);
 
         mTabsFragmentAdapter = new TabsFragmentAdapter(this);
         mStopwatchFragment = new StopwatchFragment();
+        mStopwatchFragment.setArguments(fragmentBundle);
         mTabsFragmentAdapter.addTab(getString(R.string.stopwatch), mStopwatchFragment);
         if (SettingsActivity.isLaptimerEnabled()) {
             mTabsFragmentAdapter.addTab(getString(R.string.laptimes), new LapTimesFragment());
         }
         mCountdownFragment = new CountdownFragment();
+        mCountdownFragment.setArguments(fragmentBundle);
         mTabsFragmentAdapter.addTab(getString(R.string.countdown), mCountdownFragment);
         mViewPager2.setAdapter(mTabsFragmentAdapter);
         mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -196,6 +196,36 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannels(Arrays.asList(channelStart, channelCountdown));
+            }
+        }
+    }
+
+    /**
+     * 设置当前应该展示的tab页面
+     */
+    private void setCurrentTabPage(Bundle fragmentBundle) {
+        if (getIntent() == null) {
+            return;
+        }
+        Intent intent = getIntent();
+        //If launched from Countdown notification then goto countdown clock directly
+        if (intent.getBooleanExtra(AlarmUpdater.INTENT_EXTRA_LAUNCH_COUNTDOWN, false)) {
+            mViewPager2.setCurrentItem(2);
+        }
+        // 通过shortcuts启动的;
+        String pageType = intent.getStringExtra(UstopwatchConsts.PAGE_KEY);
+        if (pageType != null) {
+            fragmentBundle.putString(UstopwatchConsts.PAGE_KEY, pageType);
+            String pageAction = intent.getStringExtra(UstopwatchConsts.PAGE_KEY_ACTION);
+            if (pageAction != null) {
+                fragmentBundle.putString(UstopwatchConsts.PAGE_KEY_ACTION, pageAction);
+            }
+            // stopwatch
+            if (UstopwatchConsts.PAGE_COUNTDOWN.equalsIgnoreCase(pageType)) {
+                mViewPager2.setCurrentItem(2);
+            }// countdown
+            else if (UstopwatchConsts.PAGE_STOPWATCH.equalsIgnoreCase(pageType)) {
+                mViewPager2.setCurrentItem(0);
             }
         }
     }

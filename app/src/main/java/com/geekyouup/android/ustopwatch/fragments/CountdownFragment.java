@@ -44,6 +44,7 @@ public class CountdownFragment extends Fragment {
 
     private boolean mRunningState = false;
     private boolean isReset = false;
+    private boolean isStateSaved = true;
 
     private static final String COUNTDOWN_PREFS = "USW_CDFRAG_PREFS";
     private static final String PREF_IS_RUNNING = "key_countdown_is_running";
@@ -139,6 +140,21 @@ public class CountdownFragment extends Fragment {
         super.onStart();
         // 创建视图的时候就从存储中恢复数据，避免视图可见的时候更新落后，使视图立即完整的
         this.restoreFromPreferences();
+        //
+        Bundle activityBundle = getArguments();
+        String action;
+        if (activityBundle != null
+                && UstopwatchConsts.PAGE_COUNTDOWN.equalsIgnoreCase(activityBundle.getString(UstopwatchConsts.PAGE_KEY))) {
+            action = activityBundle.getString(UstopwatchConsts.PAGE_KEY_ACTION);
+            // 快捷方式动作
+            if (UstopwatchConsts.PAGE_ACTION_RESTART.equalsIgnoreCase(action)) {
+                this.reset();
+                this.mCountdownView.startStop();
+            }
+            //
+            activityBundle.clear();
+        }
+        //
         Log.i(LOG_TAG, "countdown fragment onStart() complete");
     }
 
@@ -161,6 +177,9 @@ public class CountdownFragment extends Fragment {
      * @noinspection DataFlowIssue
      */
     private void restoreFromPreferences() {
+        if (!this.isStateSaved) {
+            return;
+        }
         SharedPreferences settings = getContext().getSharedPreferences(COUNTDOWN_PREFS, Context.MODE_PRIVATE);
         mLastHour = settings.getInt(KEY_LAST_HOUR, 0);
         mLastMin = settings.getInt(KEY_LAST_MIN, 0);
@@ -168,6 +187,7 @@ public class CountdownFragment extends Fragment {
         mRunningState = settings.getBoolean(PREF_IS_RUNNING, false);
         mCountdownView.restoreState(settings);
         mCurrentTimeMillis = mCountdownView.getWatchTime();
+        this.isStateSaved = false;
         Log.d(LOG_TAG, "countdown fragment restoreFromPreferences() complete");
     }
 
@@ -217,6 +237,7 @@ public class CountdownFragment extends Fragment {
         editor.putInt(KEY_LAST_MIN, mLastMin);
         editor.putInt(KEY_LAST_SEC, mLastSec);
         editor.apply();
+        this.isStateSaved = true;
         Log.i(LOG_TAG, "countdown fragment onPause() complete");
     }
 
