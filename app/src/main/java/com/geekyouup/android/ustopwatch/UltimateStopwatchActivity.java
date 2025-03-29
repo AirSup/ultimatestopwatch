@@ -204,17 +204,19 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
      * 设置当前应该展示的tab页面
      */
     private void setCurrentTabPage(Bundle fragmentBundle) {
-        if (getIntent() == null) {
+        Intent intent = getIntent();
+        if (intent == null) {
             return;
         }
-        Intent intent = getIntent();
         //If launched from Countdown notification then goto countdown clock directly
         if (intent.getBooleanExtra(AlarmUpdater.INTENT_EXTRA_LAUNCH_COUNTDOWN, false)) {
             mViewPager2.setCurrentItem(2);
         }
         // 通过shortcuts启动的;
         String pageType = intent.getStringExtra(UstopwatchConsts.PAGE_KEY);
-        if (pageType != null) {
+        boolean multiWinMode = this.isInMultiWindowMode();
+        // 避免小窗模式下快捷命令被重复触发
+        if (pageType != null && !multiWinMode) {
             fragmentBundle.putString(UstopwatchConsts.PAGE_KEY, pageType);
             String pageAction = intent.getStringExtra(UstopwatchConsts.PAGE_KEY_ACTION);
             if (pageAction != null) {

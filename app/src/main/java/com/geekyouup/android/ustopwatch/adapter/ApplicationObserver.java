@@ -60,12 +60,16 @@ public class ApplicationObserver implements DefaultLifecycleObserver {
      * 没有这里的话，之前码表新启动时指针是准确的，但是切换后台后重新切换回来，第一帧是之前冻结的视图，指针位置不准确，刷新后才指向准确位置，
      * 是因为没有走onCreateView流程，且保留了之前冻结的视图
      * 这种特殊情况与现实情况不完全符合，故这里特殊处理一下
+     * <p>
+     * 问题：小米多任务里点击小窗模式页面重建时会直接使用之前的参数，导致快捷方式启动时的参数重放，不需要重建的话就不会有这个问题
+     * 切换多任务切回去也会导致参数重放；
+     * 解决：通过判断activity.isInMultiWindowMode()
      */
     @Override
     public void onStop(@NonNull LifecycleOwner owner) {
         DefaultLifecycleObserver.super.onStop(owner);
         Log.i(LOG_TAG, "application Lifecycle.Event.ON_STOP");
+        //xx.recreate();//不能直接recreate()不然会陷入循环重建问题
         UltimateStopwatchActivity.getInstance().finish();
-        //UltimateStopwatchActivity.getInstance().recreate();//不能直接recreate()不然会陷入循环重建问题
     }
 }
