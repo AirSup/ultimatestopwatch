@@ -186,7 +186,6 @@ public class CountdownFragment extends Fragment {
         mLastSec = settings.getInt(KEY_LAST_SEC, 0);
         mRunningState = settings.getBoolean(PREF_IS_RUNNING, false);
         mCountdownView.restoreState(settings);
-        mCurrentTimeMillis = mCountdownView.getWatchTime();
         this.isStateSaved = false;
         Log.d(LOG_TAG, "countdown fragment restoreFromPreferences() complete");
     }
@@ -307,5 +306,18 @@ public class CountdownFragment extends Fragment {
         mLastSec = seconds;
         mCountdownView.setTime(mLastHour, mLastMin, mLastSec, false);
         setUIState();
+    }
+
+    public void notifyIfNecessary() {
+        try {
+            if (mRunningState && mCurrentTimeMillis < 0) {
+                AlarmUpdater.notifyCountdown(getContext(), (long) -mCurrentTimeMillis);
+                AlarmUpdater.setCountdownAlarm(getContext(), (long) -mCurrentTimeMillis);
+            } else {
+                AlarmUpdater.cancelCountdownAlarm(getContext()); //just to be sure
+                AlarmUpdater.cancelCountdownNotification(getContext());
+            }
+        } catch (Exception ignore) {
+        }
     }
 }

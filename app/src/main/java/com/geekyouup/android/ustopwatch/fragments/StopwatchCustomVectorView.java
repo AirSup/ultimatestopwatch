@@ -693,15 +693,7 @@ public class StopwatchCustomVectorView extends View {
      * Activity is being suspended.
      */
     public void saveState(SharedPreferences.Editor map) {
-        if (!mIsStopwatch || mDisplayTimeMillis > 0) {
-            if (!mIsStopwatch) {
-                if (mDisplayTimeMillis > 0 && mIsRunning) {
-                    AlarmUpdater.setCountdownAlarm(getContext(), mDisplayTimeMillis);
-                } else {
-                    AlarmUpdater.cancelCountdownAlarm(getContext()); //just to be sure
-                }
-            }
-
+        if (mDisplayTimeMillis > 0) {
             map.putBoolean(KEY_STATE + (mStopwatchMode ? "" : KEY_COUNTDOWN_SUFFIX), mIsRunning);
             map.putLong(KEY_LASTTIME + (mStopwatchMode ? "" : KEY_COUNTDOWN_SUFFIX), mLastTime);
             map.putInt(KEY_NOWTIME + (mStopwatchMode ? "" : KEY_COUNTDOWN_SUFFIX), mDisplayTimeMillis);
@@ -721,7 +713,7 @@ public class StopwatchCustomVectorView extends View {
             mLastTime = savedState.getLong(KEY_LASTTIME + (mStopwatchMode ? "" : KEY_COUNTDOWN_SUFFIX), System.currentTimeMillis());
             mDisplayTimeMillis = savedState.getInt(KEY_NOWTIME + (mStopwatchMode ? "" : KEY_COUNTDOWN_SUFFIX), 0);
             updateWatchState(true);
-            Log.d(LOG_TAG, "restoreState() watch value calculated");
+            Log.i(LOG_TAG, "restoreState() watch value calculated");
 
             removeCallbacks(animator);
             if (mIsRunning) {
@@ -768,7 +760,11 @@ public class StopwatchCustomVectorView extends View {
         sendMessageToHandler(b);
     }
 
-    //send the latest time to the parent fragment to populate the digits
+    /**
+     * send the latest time to the parent fragment to populate the digits
+     *
+     * @param mTime 需要显示在码表数字栏上的值（倒计时的为负数）
+     */
     private void broadcastClockTime(double mTime) {
         Bundle b = new Bundle();
         b.putBoolean(UstopwatchConsts.MSG_UPDATE_COUNTER_TIME, true);

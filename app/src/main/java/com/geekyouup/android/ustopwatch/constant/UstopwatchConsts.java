@@ -43,4 +43,12 @@ public final class UstopwatchConsts {
     public static final String PAGE_ACTION_START = "start";
 
     public static final String PAGE_ACTION_RESTART = "restart";
+
+    public static final int NID_STOPWATCH_START = 100;
+
+    public static final int NID_COUNTDOWN_START = 101;
+
+    public static final int NID_COUNTDOWN_DONE = 102;
+
+    public static final String INTENT_EXTRA_LAUNCH_COUNTDOWN = "launch_countdown";
 }

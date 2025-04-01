@@ -80,5 +80,6 @@
     <string name="shortcut_countdown_short">countdown</string>
     <string name="shortcut_stopwatch_restart">stopwatch reset</string>
     <string name="shortcut_countdown_restart">countdown reset</string>
+    <string name="notification_start_cd">Countdown running</string>
 
 </resources>

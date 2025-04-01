@@ -1,5 +1,6 @@
 package com.geekyouup.android.ustopwatch;
 
+import static com.geekyouup.android.ustopwatch.constant.UstopwatchConsts.INTENT_EXTRA_LAUNCH_COUNTDOWN;
 import static com.geekyouup.android.ustopwatch.constant.UstopwatchConsts.LOG_TAG;
 
 import android.annotation.SuppressLint;
@@ -15,7 +16,6 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.geekyouup.android.ustopwatch.adapter.AlarmUpdater;
 import com.geekyouup.android.ustopwatch.adapter.SoundManager;
 import com.geekyouup.android.ustopwatch.adapter.TabsFragmentAdapter;
 import com.geekyouup.android.ustopwatch.constant.UstopwatchConsts;
@@ -131,7 +131,8 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
         mStopwatchFragment.setArguments(fragmentBundle);
         mTabsFragmentAdapter.addTab(getString(R.string.stopwatch), mStopwatchFragment);
         if (SettingsActivity.isLaptimerEnabled()) {
-            mTabsFragmentAdapter.addTab(getString(R.string.laptimes), new LapTimesFragment());
+            mLapTimesFragment = new LapTimesFragment();
+            mTabsFragmentAdapter.addTab(getString(R.string.laptimes), mLapTimesFragment);
         }
         mCountdownFragment = new CountdownFragment();
         mCountdownFragment.setArguments(fragmentBundle);
@@ -209,7 +210,7 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
             return;
         }
         //If launched from Countdown notification then goto countdown clock directly
-        if (intent.getBooleanExtra(AlarmUpdater.INTENT_EXTRA_LAUNCH_COUNTDOWN, false)) {
+        if (intent.getBooleanExtra(INTENT_EXTRA_LAUNCH_COUNTDOWN, false)) {
             mViewPager2.setCurrentItem(2);
         }
         // 通过shortcuts启动的;
@@ -248,6 +249,7 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
         editor.apply();
 
         mStopwatchFragment.notifyIfNecessary(); // mStopwatchFragment not null
+        mCountdownFragment.notifyIfNecessary();
 
         LapTimeRecorder.getInstance().saveTimes(this);
     }
@@ -354,6 +356,7 @@ public class UltimateStopwatchActivity extends AppCompatActivity {
         return true;
     }
 
+    @Deprecated
     public void registerLapTimeFragment(LapTimesFragment ltf) {
         mLapTimesFragment = ltf;
     }

@@ -151,7 +151,7 @@ public class StopwatchFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(LOG_TAG, "stopwatch fragment onResume() start");
-        AlarmUpdater.cancelChronometerNotification(getActivity());
+        AlarmUpdater.cancelStopwatchNotification(getActivity());
         this.restoreFromPreferences();
         Log.i(LOG_TAG, "stopwatch fragment onResume() complete");
     }
@@ -229,7 +229,7 @@ public class StopwatchFragment extends Fragment {
         try {
             if (mRunningState && mCurrentTimeMillis > 0) {
                 // show notification
-                AlarmUpdater.showChronometerNotification(getActivity(), (long) mCurrentTimeMillis);
+                AlarmUpdater.notifyStopwatch(getActivity(), (long) mCurrentTimeMillis);
             }
         } catch (Exception ignored) {
         }

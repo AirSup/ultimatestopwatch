@@ -1,9 +1,12 @@
 package com.geekyouup.android.ustopwatch.fragments;
 
+import static com.geekyouup.android.ustopwatch.constant.UstopwatchConsts.LOG_TAG;
+
 import java.util.ArrayList;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -30,28 +33,29 @@ public class LapTimesFragment extends ListFragment implements LapTimeListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLapTimeRecorder = LapTimeRecorder.getInstance();
+        Log.i(LOG_TAG, "laptimes fragment onCreate() complete");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.laptimes_fragment, container, false);
+        View ltView = inflater.inflate(R.layout.laptimes_fragment, container, false);
+        Log.i(LOG_TAG, "laptimes fragment onCreateView() complete");
+        return ltView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        // getListView()需在onCreateView()完成后
         ListView listView = getListView();
         listView.setCacheColorHint(Color.WHITE);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-
-        setupMultiChoiceSelect(listView);
-
+        this.setupMultiChoiceSelect(listView);
         mAdapter = new LapTimesBaseAdapter(getActivity(), mLapTimes);
         super.setListAdapter(mAdapter);
-
-        //noinspection DataFlowIssue
-        ((UltimateStopwatchActivity) getActivity()).registerLapTimeFragment(this);
-
+        // 更新数据
+        this.updateData();
+        Log.i(LOG_TAG, "laptimes fragment onStart() complete");
     }
 
     private void setupMultiChoiceSelect(ListView listView) {
@@ -131,7 +135,11 @@ public class LapTimesFragment extends ListFragment implements LapTimeListener {
     @Override
     public void onResume() {
         super.onResume();
+        this.updateData();
+        Log.i(LOG_TAG, "laptimes fragment onResume() complete");
+    }
 
+    private void updateData() {
         // if vars stored then use them
         mLapTimes.clear();
         mLapTimes.addAll(mLapTimeRecorder.getTimes());
@@ -141,27 +149,14 @@ public class LapTimesFragment extends ListFragment implements LapTimeListener {
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    /**
-     * @noinspection unused
-     */
-    public void reset() {
-        mLapTimes.clear();
-        mAdapter.notifyDataSetChanged();
-    }
-
-    public void notifyDataSetChanged() {
-        mAdapter.notifyDataSetChanged();
+        Log.i(LOG_TAG, "laptimes fragment onPause() complete");
     }
 
     @Override
     public void lapTimesUpdated() {
         if (mLapTimeRecorder == null) mLapTimeRecorder = LapTimeRecorder.getInstance();
         if (mLapTimes == null) mLapTimes = new ArrayList<>();
-
-        mLapTimes.clear();
-        mLapTimes.addAll(mLapTimeRecorder.getTimes());
-        notifyDataSetChanged();
+        //
+        this.updateData();
     }
 }

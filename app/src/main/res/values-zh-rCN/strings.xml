@@ -43,9 +43,9 @@
     <string name="settings_about_text">开发者 Rich \'GeekYouUp\' Hyndman，设计者 marie-schweiz.de</string>
     <string name="version_prefix">版本 v</string>
     <string name="notification_start_sw">正在计时</string>
-    <string name="notification_channel_name_start">码表开始通知</string>
+    <string name="notification_channel_name_start">码表通知</string>
     <string name="notification_channel_desc_start">带有提醒的码表计时开始通知</string>
-    <string name="notification_channel_name_countdown">码表倒计时通知</string>
+    <string name="notification_channel_name_countdown">倒计时通知</string>
     <string name="notification_channel_desc_countdown">带有提醒的码表倒计时完成通知</string>
     <string name="theme_mode_day">日间模式</string>
     <string name="theme_mode_night">夜间模式</string>
@@ -68,4 +68,5 @@
     <string name="shortcut_countdown_short">倒计时</string>
     <string name="shortcut_stopwatch_restart">重新计时</string>
     <string name="shortcut_countdown_restart">重置倒计时</string>
+    <string name="notification_start_cd">倒计时中</string>
 </resources>
