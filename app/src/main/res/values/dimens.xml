@@ -2,6 +2,9 @@
 <resources>
     <dimen name="frame_padding">1dip</dimen>
     <dimen name="small_font">14sp</dimen>
-    <dimen name="med_font">22sp</dimen>
-    <dimen name="counter_font">50sp</dimen>
+    <dimen name="med_font">19sp</dimen>
+    <dimen name="counter_font">44sp</dimen>
+    <dimen name="text_title">17sp</dimen>
+    <dimen name="text_opt">16sp</dimen>
+    <dimen name="text_info">14sp</dimen>
 </resources>
